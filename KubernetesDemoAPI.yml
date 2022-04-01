@@ -25,8 +25,6 @@ spec:
               secretKeyRef:
                 name: kubernetesbase64pfxfilepassword
                 key: password
-          #- name: ASPNETCORE_URLS
-          #  value: "https://+;http://+;"
       imagePullSecrets:
         - name: acr-secret
 ---
