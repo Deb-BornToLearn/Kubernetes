@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetesdemoapi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubernetesdemoapi
+  template:
+    metadata:
+      labels:
+        app: kubernetesdemoapi
+    spec:
+      containers:
+        - image: "kubernetesdemo12.azurecr.io/kubernetesdemoapi:1022-20220401.2"
+          imagePullPolicy: IfNotPresent
+          name: kubernetesdemoapi
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          env:
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+            valueFrom:
+              secretKeyRef:
+                name: kubernetesbase64pfxfilepassword
+                key: password
+          #- name: ASPNETCORE_URLS
+          #  value: "https://+;http://+;"
+      imagePullSecrets:
+        - name: acr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetesdemoapi
+spec:
+  type: NodePort
+  ports:
+  - name: http-port
+    port: 80
+    targetPort: 80
+  - name: https-port
+    port: 443
+    targetPort: 443
+  selector:
+    app: kubernetesdemoapi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetesdemoapilb
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http-port
+    port: 80
+  - name: https-port
+    port: 443
+  selector:
+    app: kubernetesdemoapi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: kubernetesdemoapi-ingress
+spec:
+    rules:
+    - http:
+        paths:
+        - path: /weatherforecast
+          pathType: Prefix
+          backend:
+            service:
+              name: kubernetesdemoapilb
+              port:
+                number: 80    
