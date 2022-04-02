@@ -13,7 +13,7 @@ spec:
         app: kubernetesdemo
     spec:
       containers:
-        - image: "kubernetesdemo12.azurecr.io/kubernetesdemo:1025-20220401.3"
+        - image: "kubernetesdemo12.azurecr.io/kubernetesdemo:1027-20220401.4"
           imagePullPolicy: IfNotPresent
           name: kubernetesdemo
           ports:
