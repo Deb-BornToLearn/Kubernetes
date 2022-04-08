@@ -1,0 +1,22 @@
+appName: elementsapi
+replicaCount: 2
+volume:
+    volumeName: elementshttps-cert-volume
+    secretName: elementshttps-cert
+    volumeMountPath: /elements/elementshttps-cert
+    pfxFileName: elementshttps.pfx
+
+
+loadbalancerName: elemetnsapilb
+httpPort: 80
+httpsPort: 443
+sslCertPasswordSecretName: kubernetesbase64pfxfilepassword
+aspnetCoreUrls: "http://+;https://+;"
+
+container:
+    imageName: elementsappregistry.azurecr.io/elementsapi:1033-20220404.1
+    containerName: elemetnsapi
+    imagePullSecret: elementsappregistry-secret
+    imagePullPolicy: IfNotPresent
+    httpPort: 80
+    httpsPort: 443    

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      volumes:
+        - name: {{ .Values.volume.volumeName }}
+          secret:
+            secretName: {{ .Values.volume.secretName }}
+            items:
+            - key: file
+              path: {{ .Values.volume.pfxFileName }}
+      containers:
+        - image: {{ .Values.container.imageName | quote }}
+          imagePullPolicy: {{ .Values.container.imagePullPolicy }}
+          name: {{ .Values.container.containerName }}-{{ randAlphaNum 5 | lower }}
+          ports:
+            - containerPort: {{ .Values.container.httpPort }}
+            - containerPort: {{ .Values.container.httpsPort }}
+          volumeMounts:
+            - mountPath: {{ .Values.volume.volumeMountPath | quote }}
+              name: {{ .Values.volume.volumeName }}
+              readOnly: true
+          env:
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sslCertPasswordSecretName }}
+                key: password
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+            value: {{ printf "%s/%s" .Values.volume.volumeMountPath .Values.volume.pfxFileName | quote }}
+          - name: ASPNETCORE_URLS
+            value: {{ .Values.aspnetCoreUrls | quote }}
+      imagePullSecrets:
+        - name: {{ .Values.container.imagePullSecret }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}
+spec:
+  type: NodePort
+  ports:
+  - name: http-port
+    port: {{ .Values.httpPort }}
+    targetPort: {{ .Values.httpPort }}
+  - name: https-port
+    port: {{ .Values.httpsPort }}
+    targetPort: {{ .Values.httpsPort }}
+  selector:
+    app: {{ .Values.appName }}        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.loadbalancerName }}
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http-port
+    port: {{ .Values.httpPort }}
+  - name: https-port
+    port: {{ .Values.httpsPort }}
+  selector:
+    app: {{ .Values.appName }}        
