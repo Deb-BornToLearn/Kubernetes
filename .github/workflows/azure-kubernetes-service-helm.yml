@@ -39,13 +39,13 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
-  CONTAINER_NAME: "your-container-name"
-  RESOURCE_GROUP: "your-resource-group"
-  CLUSTER_NAME: "your-cluster-name"
-  IMAGE_PULL_SECRET_NAME: "your-image-pull-secret-name"
-  CHART_PATH: "your-chart-path"
-  CHART_OVERRIDE_PATH: "your-chart-override-path"
+  AZURE_CONTAINER_REGISTRY: "kubernetesdemo12"
+  CONTAINER_NAME: "kubernetesdemoapi"
+  RESOURCE_GROUP: "KubernetesDemoContainerRegistry"
+  CLUSTER_NAME: "testcluster"
+  IMAGE_PULL_SECRET_NAME: "kubedemopappregistry-secret"
+  CHART_PATH: "KubernetesDemoAPI/chart/Chart.yaml"
+  CHART_OVERRIDE_PATH: "KubernetesDemoAPI/chart/values.yaml"
 
 jobs:
   build:
