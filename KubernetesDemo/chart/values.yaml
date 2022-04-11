@@ -1,0 +1,22 @@
+appName: kubernetesdemo
+replicaCount: 1
+volume:
+    volumeName: elementshttps-cert-volume
+    secretName: elementshttps-cert
+    volumeMountPath: /elements/elementshttps-cert
+    pfxFileName: elementshttps.pfx
+
+
+loadbalancerName: kubernetesdemolb
+httpPort: 80
+httpsPort: 443
+sslCertPasswordSecretName: kubernetesbase64pfxfilepassword
+aspnetCoreUrls: "http://+;https://+;"
+
+container:
+    imageName: kubernetesdemo12.azurecr.io/kubernetesdemo:1027-20220401.4
+    containerName: kubernetesdemo
+    imagePullSecret: kubedemopappregistry-secret
+    imagePullPolicy: IfNotPresent
+    httpPort: 80
+    httpsPort: 443    
